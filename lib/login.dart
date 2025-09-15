@@ -1,9 +1,7 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
 
-class Login extends StatefulWidget{
+class Login extends StatefulWidget {
   const Login({super.key});
   @override
   State<StatefulWidget> createState() {
@@ -11,73 +9,181 @@ class Login extends StatefulWidget{
   }
 }
 
-class LoginState extends State<Login>{
-
-  createLogo(){
+class LoginState extends State<Login> {
+  static const titleSize = 80.0;
+  static const heading2 = 56.0;
+  static const textSize = 16.0;
+  static bool? rememberMe = false;
+  createLogo() {
     return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(Icons.build, color: Colors.red, size: 50,),
-          Text("BILDR", style: TextStyle(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(Icons.build, color: Colors.red, size: titleSize),
+        Text(
+          "BILDR",
+          style: TextStyle(
             color: Colors.red,
             fontWeight: FontWeight.bold,
-            fontSize: 50,
-          ),)
-        ]
-    );
-  }
-  createTextBox(size, String text, double textSize){
-    return Container(
-      width: size.width/1.4,
-      margin: EdgeInsets.only(top: 10, left: 10),
-      padding: EdgeInsets.all(5),
-      color: Colors.white,
-      child: Text(text, style: TextStyle(fontSize: textSize)),
+            fontSize: titleSize,
+          ),
+        ),
+      ],
     );
   }
 
-  pressedButtoon(){
-    print("Hello");
-  }
-  createContainer(size){
+  createTextBox(width, height, String text, double textSize) {
     return Container(
-      height: size.height/2,
-      width: size.width/1.2,
+      alignment: Alignment.centerLeft,
+      width: width,
+      height: height,
+      padding: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(50),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+        child: Text(text, style: TextStyle(fontSize: textSize)),
+      ),
+    );
+  }
+
+  createContainer(size) {
+    var containerWidth = size.width / 1.2;
+
+    return Container(
+      height: size.height / 2,
+      width: containerWidth,
       decoration: BoxDecoration(
         color: Colors.blue,
         border: Border.all(color: Colors.black),
         borderRadius: BorderRadius.circular(50),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("Sign In", style: TextStyle(color: Colors.black,
-            fontSize: 36, fontWeight: FontWeight.bold),),
-          createTextBox(size, "Email / Phone number", 24),
-          createTextBox(size, "Password", 24),
-          TextButton(onPressed: pressedButtoon,
-              style: ButtonStyle(backgroundColor: WidgetStateProperty.all<Color>(Colors.red),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Login",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: heading2,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+              child: createTextBox(
+                containerWidth,
+                36.0,
+                "Email / Phone number",
+                textSize,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+              child: createTextBox(containerWidth, 36.0, "Password", textSize),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Checkbox(
+                  value: rememberMe,
+                  activeColor: Colors.red,
+                  visualDensity: VisualDensity(horizontal: -4.0),
+                  onChanged: (bool? newValue) {
+                    setState(() {
+                      rememberMe = newValue;
+                    });
+                  },
                 ),
-              child: Text("Sign In")
-            )
-        ],
+                Text("Remember me", style: TextStyle(fontSize: textSize)),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child:
+                    TextButton(
+                      onPressed: () {
+                        print("Forgot password");
+                      },
+                      child: Text(
+                        "Forgot Password?",
+                        style: TextStyle(fontSize: textSize,
+                            color: Colors.red,
+                        ),
+                      ),
+                    ),
+                ),
+              ],
+            ),
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  print("Login");
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  minimumSize: Size(containerWidth, 0.0),
+                ),
+                child: Text(
+                  "Log In",
+                  style: TextStyle(
+                    fontSize: textSize,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Don't have an account?",
+                    style: TextStyle(fontSize: textSize),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      print("SignUP");
+                    },
+                    style: TextButton.styleFrom(
+                      fixedSize: Size(0.0, 0.0),
+                      padding: EdgeInsets.zero,
+                      backgroundColor: Colors.white,
+                      minimumSize: Size(containerWidth, 36.0),
+                    ),
+                    child: Text(
+                      "SignUp",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                        fontSize: textSize,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          createLogo(),
-          createContainer(size),
-        ],
+        children: [createLogo(), createContainer(size)],
       ),
     );
   }
