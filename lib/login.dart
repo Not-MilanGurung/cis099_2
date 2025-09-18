@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:core';
 
+import 'package:my_app/dashboard.dart';
+
 class Login extends StatefulWidget {
   const Login({super.key});
   @override
@@ -104,25 +106,25 @@ class LoginState extends State<Login> {
                 Text("Remember me", style: TextStyle(fontSize: textSize)),
                 Align(
                   alignment: Alignment.centerLeft,
-                  child:
-                    TextButton(
-                      onPressed: () {
-                        print("Forgot password");
-                      },
-                      child: Text(
-                        "Forgot Password?",
-                        style: TextStyle(fontSize: textSize,
-                            color: Colors.red,
-                        ),
-                      ),
+                  child: TextButton(
+                    onPressed: () {
+                      print("Forgot password");
+                    },
+                    child: Text(
+                      "Forgot Password?",
+                      style: TextStyle(fontSize: textSize, color: Colors.red),
                     ),
+                  ),
                 ),
               ],
             ),
             Center(
               child: TextButton(
                 onPressed: () {
-                  print("Login");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(builder: (context) => Dashboard()),
+                  );
                 },
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.red,
