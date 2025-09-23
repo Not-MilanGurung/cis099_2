@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/detailPage.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -53,7 +54,7 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  verticalCard(size, heading, date, buttonText){
+  verticalCard(size, heading, date, buttonText) {
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: Row(
@@ -70,13 +71,8 @@ class _DashboardState extends State<Dashboard> {
                   color: Colors.red,
                   borderRadius: BorderRadius.circular(15),
                 ),
-                child: Icon(
-                  Icons.play_circle,
-                  color: Colors.white,
-                  size: 40,
-                ),
+                child: Icon(Icons.play_circle, color: Colors.white, size: 40),
               ),
-
             ],
           ),
 
@@ -84,43 +80,52 @@ class _DashboardState extends State<Dashboard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                width: size.width/2,
+              SizedBox(
+                width: size.width / 2,
                 child: Text(
                   heading,
                   style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold
+                    fontSize: 20,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
                   ),
-                  overflow: TextOverflow.ellipsis, maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                 ),
               ),
-              SizedBox(height: 20,),
-              Container(
-                width: size.width/2,
+              SizedBox(height: 20),
+              SizedBox(
+                width: size.width / 2,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(15)
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                      padding: EdgeInsets.only(left: 15,right: 15,top: 10,bottom: 10),
-                      child: Text(buttonText,style: TextStyle(color: Colors.white),),
+                      padding: EdgeInsets.only(
+                        left: 15,
+                        right: 15,
+                        top: 10,
+                        bottom: 10,
+                      ),
+                      child: Text(
+                        buttonText,
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
-                    Text(date,style: TextStyle(color: Colors.black),),
+                    Text(date, style: TextStyle(color: Colors.black)),
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ],
       ),
     );
-    
   }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -131,22 +136,51 @@ class _DashboardState extends State<Dashboard> {
           SizedBox(height: 60),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                horizontalCard(size,"This is PCPS","sept 5 2025"),
-                horizontalCard(size,"NEWS 245","sept 6 2025"),
-                horizontalCard(size, "HI HOW ARE YOU","sept 7 2025"),
-                horizontalCard(size, "Happy holidays","sept 8 2025")
-              ],
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (context) => const DetailPage(),
+                  ),
+                );
+              },
+              child: Row(
+                children: [
+                  horizontalCard(size, "This is PCPS", "sept 5 2025"),
+                  horizontalCard(size, "NEWS 245", "sept 6 2025"),
+                  horizontalCard(size, "HI HOW ARE YOU", "sept 7 2025"),
+                  horizontalCard(size, "Happy holidays", "sept 8 2025"),
+                ],
+              ),
             ),
           ),
           SingleChildScrollView(
             child: Column(
               children: [
-                verticalCard(size, "Today is holiday Today is sunday Today is sunday", "10th sept 2025", "Click here"),
-                verticalCard(size, "Today is sunday", "10th sept 2025", "Click here"),
-                verticalCard(size, "Today is monday", "10th sept 2025", "Click here"),
-                verticalCard(size, "Today is tuesday", "10th sept 2025", "Click here")
+                verticalCard(
+                  size,
+                  "Today is holiday Today is sunday Today is sunday",
+                  "10th sept 2025",
+                  "Click here",
+                ),
+                verticalCard(
+                  size,
+                  "Today is sunday",
+                  "10th sept 2025",
+                  "Click here",
+                ),
+                verticalCard(
+                  size,
+                  "Today is monday",
+                  "10th sept 2025",
+                  "Click here",
+                ),
+                verticalCard(
+                  size,
+                  "Today is tuesday",
+                  "10th sept 2025",
+                  "Click here",
+                ),
               ],
             ),
           ),
