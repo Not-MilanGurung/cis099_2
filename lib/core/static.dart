@@ -1,4 +1,7 @@
-class StaticValue{
+class StaticValue {
+  static final String apiKey = "01e1fd60224d49e2978d26aa4c80770f";
+  static final String baseURL = "newsapi.org";
+  static final String path = "/v2/everything";
   var rawData = '''
   {
     "status": "ok",

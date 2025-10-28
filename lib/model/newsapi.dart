@@ -1,11 +1,11 @@
-class NewApi {
+class NewsApi {
   String? status;
   int? totalResults;
   List<Articles>? articles;
 
-  NewApi({this.status, this.totalResults, this.articles});
+  NewsApi({this.status, this.totalResults, this.articles});
 
-  NewApi.fromJson(Map<String, dynamic> json) {
+  NewsApi.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     totalResults = json['totalResults'];
     if (json['articles'] != null) {
@@ -49,9 +49,7 @@ class Articles {
   });
 
   Articles.fromJson(Map<String, dynamic> json) {
-    source = json['source'] != null
-        ? Source.fromJson(json['source'])
-        : null;
+    source = json['source'] != null ? Source.fromJson(json['source']) : null;
     author = json['author'];
     title = json['title'];
     description = json['description'];

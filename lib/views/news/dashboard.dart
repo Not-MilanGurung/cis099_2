@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/core/newsapi.dart';
+import 'package:my_app/model/newsapi.dart';
 import 'package:my_app/views/news/detailPage.dart';
 
 class Dashboard extends StatefulWidget {
@@ -9,111 +11,202 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  horizontalCard(size, heading, date) {
-    return Stack(
-      children: [
-        Container(
-          height: size.height / 5,
-          width: size.width / 1.5,
-          margin: EdgeInsets.only(left: 10),
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: Image.network(
-              "https://i0.wp.com/9to5mac.com/wp-content/uploads/sites/6/2025/09/ifixit-iphone-17-pro-teardown.jpg?resize=1200%2C628&quality=82&strip=all&ssl=1",
-              fit: BoxFit.fill,
-              opacity: const AlwaysStoppedAnimation(.7),
-            ),
-          ),
-        ),
-        Container(
-          height: size.height / 5,
-          width: size.width / 1.5,
-          margin: EdgeInsets.only(left: 10),
-          decoration: BoxDecoration(
-            color: Colors.black,
-            gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.center,
-              colors: [Colors.black, Colors.transparent],
-            ),
-          ),
-        ),
+  late Future<NewsApi?> futureNewsApiHorizontal;
+  late Future<NewsApi?> futureNewsApiVertical;
 
-        Positioned(
-          bottom: 15,
-          left: 15,
-          child: Column(
-            children: [
-              Text(
-                heading,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black,
-                      blurRadius: 5,
-                      offset: Offset(0.0, 0.0),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                date,
-                style: TextStyle(
-                  color: Colors.white60,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+  @override
+  void initState() {
+    super.initState();
+    futureNewsApiHorizontal = NewsApiCall().getnewsdata('Tesla');
+    futureNewsApiVertical = NewsApiCall().getnewsdata('Nepal');
+  }
+
+  horizontalCard(size, heading, date, String? imageURL) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (context) => const DetailPage(),
           ),
-        ),
-        Positioned(
-          right: 15,
-          bottom: 15,
-          child: Icon(Icons.play_circle, color: Colors.white, size: 30),
-        ),
-      ],
+        );
+      },
+      child: Stack(
+        children: [
+          Container(
+            height: size.height / 5,
+            width: size.width / 1.5,
+            margin: EdgeInsets.only(left: 10),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.network(
+                imageURL ??
+                    "https://thumbs.dreamstime.com/b/no-image-available-icon-isolated-dark-background-simple-vector-logo-no-image-available-icon-isolated-dark-background-275079095.jpg",
+                fit: BoxFit.fill,
+                  errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                    // Appropriate logging or analytics, e.g.
+                    // myAnalytics.recordError(
+                    //   'An error occurred loading "https://example.does.not.exist/image.jpg"',
+                    //   exception,
+                    //   stackTrace,
+                    // );
+                    return Image.network(
+                        "https://thumbs.dreamstime.com/b/no-image-available-icon-isolated-dark-background-simple-vector-logo-no-image-available-icon-isolated-dark-background-275079095.jpg",
+                        fit: BoxFit.fill);
+                  },
+                opacity: const AlwaysStoppedAnimation(.7),
+              ),
+            ),
+          ),
+          Container(
+            height: size.height / 5,
+            width: size.width / 1.5,
+            margin: EdgeInsets.only(left: 10),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.center,
+                colors: [Colors.black, Colors.transparent],
+              ),
+            ),
+          ),
+
+          Positioned(
+            bottom: 15,
+            left: 15,
+            child: Column(
+              children: [
+                Text(
+                  heading,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black,
+                        blurRadius: 5,
+                        offset: Offset(0.0, 0.0),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  date,
+                  style: TextStyle(
+                    color: Colors.white60,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            right: 15,
+            bottom: 15,
+            child: Icon(Icons.play_circle, color: Colors.white, size: 30),
+          ),
+        ],
+      ),
     );
   }
 
-  verticalCard(size, heading, date, buttonText) {
+  getHorozintalCards(NewsApi newsApi, size) {
+    List<GestureDetector> cards = List<GestureDetector>.empty(growable: true);
+    int total = newsApi.articles?.length ?? 0;
+    for (int i = 0; i < total; i++) {
+      if (newsApi.articles == null) break;
+      cards.add(
+        horizontalCard(
+          size,
+          newsApi.articles![i].title,
+          newsApi.articles![i].publishedAt,
+          newsApi.articles![i].urlToImage,
+        ),
+      );
+    }
+    return Row(children: cards);
+  }
+
+  getVerticalCards(NewsApi newsApi, size) {
+    List<Padding> cards = List<Padding>.empty(growable: true);
+    int total = newsApi.articles?.length ?? 0;
+    for (int i = 0; i < total; i++){
+      if (newsApi.articles == null) break;
+      cards.add(
+      verticalCard(
+        size,
+        newsApi.articles![i].title ?? '',
+        newsApi.articles![i].publishedAt ?? '',
+        'Click For More',
+        newsApi.articles![i].urlToImage,
+      )
+      );
+    }
+    return Column(
+
+      children: cards,
+    );
+
+  }
+
+  verticalCard(size, heading, date, buttonText, imageURL) {
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                height: 100,
-                width: 120,
-                margin: EdgeInsets.only(right: 20),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Image.network(
-                    "https://i0.wp.com/9to5mac.com/wp-content/uploads/sites/6/2025/09/ifixit-iphone-17-pro-teardown.jpg?resize=1200%2C628&quality=82&strip=all&ssl=1",
+          GestureDetector(
+            onTap: (){
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (context) => const DetailPage(),
+                ),
+              );
+            },
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  height: 100,
+                  width: 120,
+                  margin: EdgeInsets.only(right: 20),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.network(
+                      imageURL ??
+                          "https://thumbs.dreamstime.com/b/no-image-available-icon-isolated-dark-background-simple-vector-logo-no-image-available-icon-isolated-dark-background-275079095.jpg",
+                      fit: BoxFit.fill,
+                      errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                        // Appropriate logging or analytics, e.g.
+                        // myAnalytics.recordError(
+                        //   'An error occurred loading "https://example.does.not.exist/image.jpg"',
+                        //   exception,
+                        //   stackTrace,
+                        // );
+                        return Image.network("https://thumbs.dreamstime.com/b/no-image-available-icon-isolated-dark-background-simple-vector-logo-no-image-available-icon-isolated-dark-background-275079095.jpg",
+                        fit: BoxFit.fill);
+                  },
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                height: 100,
-                width: 120,
-                margin: EdgeInsets.only(right: 20),
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(15),
+                Container(
+                  height: 100,
+                  width: 120,
+                  margin: EdgeInsets.only(right: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Icon(Icons.play_circle, color: Colors.red, size: 40),
                 ),
-                child: Icon(Icons.play_circle, color: Colors.red, size: 40),
-              ),
-            ],
+              ],
+            ),
           ),
 
           Column(
@@ -121,7 +214,7 @@ class _DashboardState extends State<Dashboard> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SizedBox(
-                width: size.width / 2,
+                width: size.width / 1.8,
                 child: Text(
                   heading,
                   style: TextStyle(
@@ -135,8 +228,9 @@ class _DashboardState extends State<Dashboard> {
               ),
               SizedBox(height: 20),
               SizedBox(
-                width: size.width / 2,
+                width: size.width / 1.8,
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
@@ -155,7 +249,13 @@ class _DashboardState extends State<Dashboard> {
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-                    Text(date, style: TextStyle(color: Colors.black)),
+                    Expanded(
+                      child: Text(
+                        date,
+                        style: TextStyle(color: Colors.black),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -171,60 +271,46 @@ class _DashboardState extends State<Dashboard> {
     var size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(),
-      body: Column(
-        children: [
-          SizedBox(height: 60),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (context) => const DetailPage(),
-                  ),
-                );
-              },
-              child: Row(
-                children: [
-                  horizontalCard(size, "This is PCPS", "sept 5 2025"),
-                  horizontalCard(size, "NEWS 245", "sept 6 2025"),
-                  horizontalCard(size, "HI HOW ARE YOU", "sept 7 2025"),
-                  horizontalCard(size, "Happy holidays", "sept 8 2025"),
-                ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 60),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: FutureBuilder<NewsApi?>(
+                future: futureNewsApiHorizontal,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return getHorozintalCards(snapshot.data!, size);
+                  } else if (!snapshot.hasData) {
+                    return Text("${snapshot.error}");
+                  }
+
+                  return const CircularProgressIndicator();
+                },
+                // [
+                // horizontalCard(size, "This is PCPS", "sept 5 2025"),
+                // horizontalCard(size, "NEWS 245", "sept 6 2025"),
+                // horizontalCard(size, "HI HOW ARE YOU", "sept 7 2025"),
+                // horizontalCard(size, "Happy holidays", "sept 8 2025"),
+                // ],
               ),
             ),
-          ),
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                verticalCard(
-                  size,
-                  "Today is holiday Today is sunday Today is sunday",
-                  "10th sept 2025",
-                  "Click here",
+        
+
+              FutureBuilder<NewsApi?>(
+                  future: futureNewsApiVertical,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return getVerticalCards(snapshot.data!, size);
+                    } else if (snapshot.hasError) {
+                      return Text("${snapshot.error}");
+                    }
+                    return const Center(child: CircularProgressIndicator());
+                  },
                 ),
-                verticalCard(
-                  size,
-                  "Today is sunday",
-                  "10th sept 2025",
-                  "Click here",
-                ),
-                verticalCard(
-                  size,
-                  "Today is monday",
-                  "10th sept 2025",
-                  "Click here",
-                ),
-                verticalCard(
-                  size,
-                  "Today is tuesday",
-                  "10th sept 2025",
-                  "Click here",
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
