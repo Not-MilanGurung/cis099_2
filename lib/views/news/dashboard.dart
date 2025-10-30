@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/core/newsapi.dart';
+import 'package:my_app/core/newsapicall.dart';
 import 'package:my_app/model/newsapi.dart';
 import 'package:my_app/views/news/detailPage.dart';
 
@@ -25,9 +25,7 @@ class _DashboardState extends State<Dashboard> {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (context) => const DetailPage(),
-          ),
+          MaterialPageRoute<void>(builder: (context) => const DetailPage()),
         );
       },
       child: Stack(
@@ -46,17 +44,23 @@ class _DashboardState extends State<Dashboard> {
                 imageURL ??
                     "https://thumbs.dreamstime.com/b/no-image-available-icon-isolated-dark-background-simple-vector-logo-no-image-available-icon-isolated-dark-background-275079095.jpg",
                 fit: BoxFit.fill,
-                  errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                    // Appropriate logging or analytics, e.g.
-                    // myAnalytics.recordError(
-                    //   'An error occurred loading "https://example.does.not.exist/image.jpg"',
-                    //   exception,
-                    //   stackTrace,
-                    // );
-                    return Image.network(
+                errorBuilder:
+                    (
+                      BuildContext context,
+                      Object exception,
+                      StackTrace? stackTrace,
+                    ) {
+                      // Appropriate logging or analytics, e.g.
+                      // myAnalytics.recordError(
+                      //   'An error occurred loading "https://example.does.not.exist/image.jpg"',
+                      //   exception,
+                      //   stackTrace,
+                      // );
+                      return Image.network(
                         "https://thumbs.dreamstime.com/b/no-image-available-icon-isolated-dark-background-simple-vector-logo-no-image-available-icon-isolated-dark-background-275079095.jpg",
-                        fit: BoxFit.fill);
-                  },
+                        fit: BoxFit.fill,
+                      );
+                    },
                 opacity: const AlwaysStoppedAnimation(.7),
               ),
             ),
@@ -78,10 +82,12 @@ class _DashboardState extends State<Dashboard> {
           Positioned(
             bottom: 15,
             left: 15,
+            width: size.width / 1.5,
             child: Column(
               children: [
                 Text(
                   heading,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,
@@ -117,42 +123,62 @@ class _DashboardState extends State<Dashboard> {
   }
 
   getHorozintalCards(NewsApi newsApi, size) {
-    List<GestureDetector> cards = List<GestureDetector>.empty(growable: true);
-    int total = newsApi.articles?.length ?? 0;
-    for (int i = 0; i < total; i++) {
-      if (newsApi.articles == null) break;
-      cards.add(
-        horizontalCard(
-          size,
-          newsApi.articles![i].title,
-          newsApi.articles![i].publishedAt,
-          newsApi.articles![i].urlToImage,
-        ),
-      );
-    }
-    return Row(children: cards);
+    return Container(
+      height: size.height/5,
+        child: ListView.builder(
+          shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        itemCount: newsApi.articles!.length,
+        itemBuilder: (BuildContext context, int index) {
+          return horizontalCard(size, newsApi.articles![index].title,
+              newsApi.articles![index].publishedAt,
+              newsApi.articles![index].urlToImage);
+        }));
+    // List<GestureDetector> cards = List<GestureDetector>.empty(growable: true);
+    // int total = newsApi.articles?.length ?? 0;
+    // for (int i = 0; i < total; i++) {
+    //   if (newsApi.articles == null) break;
+    //   cards.add(
+    //     horizontalCard(
+    //       size,
+    //       newsApi.articles![i].title,
+    //       newsApi.articles![i].publishedAt,
+    //       newsApi.articles![i].urlToImage,
+    //     ),
+    //   );
+    // }
+    // return Row(children: cards);
   }
 
   getVerticalCards(NewsApi newsApi, size) {
-    List<Padding> cards = List<Padding>.empty(growable: true);
-    int total = newsApi.articles?.length ?? 0;
-    for (int i = 0; i < total; i++){
-      if (newsApi.articles == null) break;
-      cards.add(
-      verticalCard(
-        size,
-        newsApi.articles![i].title ?? '',
-        newsApi.articles![i].publishedAt ?? '',
-        'Click For More',
-        newsApi.articles![i].urlToImage,
-      )
-      );
-    }
-    return Column(
-
-      children: cards,
-    );
-
+    return Container(
+        padding: EdgeInsetsGeometry.only(top: 12, bottom: 12),
+        height: size.height / 1.5,
+        child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: newsApi.articles!.length,
+        itemBuilder: (BuildContext context, int index){
+          return verticalCard(size,
+          newsApi.articles![index].title,
+          newsApi.articles![index].publishedAt,
+          'More',
+          newsApi.articles![index].urlToImage);
+        }));
+    // List<Padding> cards = List<Padding>.empty(growable: true);
+    // int total = newsApi.articles?.length ?? 0;
+    // for (int i = 0; i < total; i++) {
+    //   if (newsApi.articles == null) break;
+    //   cards.add(
+    //     verticalCard(
+    //       size,
+    //       newsApi.articles![i].title ?? '',
+    //       newsApi.articles![i].publishedAt ?? '',
+    //       'More',
+    //       newsApi.articles![i].urlToImage,
+    //     ),
+    //   );
+    // }
+    // return Column(children: cards);
   }
 
   verticalCard(size, heading, date, buttonText, imageURL) {
@@ -162,7 +188,7 @@ class _DashboardState extends State<Dashboard> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           GestureDetector(
-            onTap: (){
+            onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (context) => const DetailPage(),
@@ -182,16 +208,23 @@ class _DashboardState extends State<Dashboard> {
                       imageURL ??
                           "https://thumbs.dreamstime.com/b/no-image-available-icon-isolated-dark-background-simple-vector-logo-no-image-available-icon-isolated-dark-background-275079095.jpg",
                       fit: BoxFit.fill,
-                      errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                        // Appropriate logging or analytics, e.g.
-                        // myAnalytics.recordError(
-                        //   'An error occurred loading "https://example.does.not.exist/image.jpg"',
-                        //   exception,
-                        //   stackTrace,
-                        // );
-                        return Image.network("https://thumbs.dreamstime.com/b/no-image-available-icon-isolated-dark-background-simple-vector-logo-no-image-available-icon-isolated-dark-background-275079095.jpg",
-                        fit: BoxFit.fill);
-                  },
+                      errorBuilder:
+                          (
+                            BuildContext context,
+                            Object exception,
+                            StackTrace? stackTrace,
+                          ) {
+                            // Appropriate logging or analytics, e.g.
+                            // myAnalytics.recordError(
+                            //   'An error occurred loading "https://example.does.not.exist/image.jpg"',
+                            //   exception,
+                            //   stackTrace,
+                            // );
+                            return Image.network(
+                              "https://thumbs.dreamstime.com/b/no-image-available-icon-isolated-dark-background-simple-vector-logo-no-image-available-icon-isolated-dark-background-275079095.jpg",
+                              fit: BoxFit.fill,
+                            );
+                          },
                     ),
                   ),
                 ),
@@ -249,6 +282,7 @@ class _DashboardState extends State<Dashboard> {
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
+                    SizedBox(width: 10,),
                     Expanded(
                       child: Text(
                         date,
@@ -271,47 +305,42 @@ class _DashboardState extends State<Dashboard> {
     var size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(),
-      body: SingleChildScrollView(
-        child: Column(
+      body: Column(
           children: [
-            SizedBox(height: 60),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: FutureBuilder<NewsApi?>(
+            FutureBuilder<NewsApi?>(
                 future: futureNewsApiHorizontal,
                 builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return getHorozintalCards(snapshot.data!, size);
-                  } else if (!snapshot.hasData) {
-                    return Text("${snapshot.error}");
+                  switch(snapshot.connectionState){
+                    case ConnectionState.none:
+                      break;
+                    case ConnectionState.active:
+                      break;
+                    case ConnectionState.waiting:
+                      break;
+                    case ConnectionState.done:
+                      if(snapshot.hasData){
+                        NewsApi? data = snapshot.data;
+                        return getHorozintalCards(data!, size);
+                      }
                   }
-
-                  return const CircularProgressIndicator();
+                  return Center(child: const CircularProgressIndicator());
                 },
-                // [
-                // horizontalCard(size, "This is PCPS", "sept 5 2025"),
-                // horizontalCard(size, "NEWS 245", "sept 6 2025"),
-                // horizontalCard(size, "HI HOW ARE YOU", "sept 7 2025"),
-                // horizontalCard(size, "Happy holidays", "sept 8 2025"),
-                // ],
               ),
-            ),
-        
 
-              FutureBuilder<NewsApi?>(
-                  future: futureNewsApiVertical,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return getVerticalCards(snapshot.data!, size);
-                    } else if (snapshot.hasError) {
-                      return Text("${snapshot.error}");
-                    }
-                    return const Center(child: CircularProgressIndicator());
-                  },
-                ),
+            FutureBuilder<NewsApi?>(
+              future: futureNewsApiVertical,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return getVerticalCards(snapshot.data!, size);
+                } else if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
+                }
+                return const Center(child: CircularProgressIndicator());
+              },
+            ),
           ],
         ),
-      ),
+      
     );
   }
 }
